@@ -1,289 +1,877 @@
-# Java Basics Assessment Review
+# Java Basics — Study Guide & Assessment Reference
 
-1.  **Primitive Data Types**: Java has eight built-in data types: `byte`, `short`, `int`, `long`, `float`, `double`, `char`, and `boolean`.
+This guide is designed to help you **study before the assessment** and serve as a **reference during the assessment**. It explains the core concepts, shows canonical examples, and highlights common pitfalls. It does **not** give you direct answers — you'll still need to think through each question. The goal is to make sure that if you understand the material in this guide, you can reason through any question on the assessment.
 
-    ```java
-    byte b = 10;
-    short s = 500;
-    int i = 1000;
-    long l = 5000L;
-    float f = 5.7f;
-    double d = 9.7;
-    char c = 'A';
-    boolean bool = true;
-    ```
+---
 
-    Note: `String` is NOT a primitive data type.
+## How to Approach Problems on the Assessment
 
-    ```java
-    String str = "Hello, Java!";
-    ```
+Before diving into the content, here are some general strategies that will serve you well regardless of the specific question:
 
-2.  **Main Method**: This is the entry point of a Java application.
+### 1. Read the entire code before answering
 
-    ```java
-    public static void main(String[] args) {
-        // code here
+Don't just look at the first line or the last line. Many questions involve subtle interactions between multiple lines. Read top to bottom, then re-read.
+
+### 2. Trace through code step by step
+
+For loops, conditionals, and method calls, walk through what happens on each iteration or each step. Keep track of variable values as you go. If it helps, write them down on scratch paper.
+
+**Example of tracing:**
+
+```java
+int x = 5;
+x = x + 2;
+x = x * 3;
+```
+
+Trace: `x = 5` → `x = 5 + 2 = 7` → `x = 7 * 3 = 21`. Final value: `21`.
+
+### 3. Check array bounds carefully
+
+Arrays in Java are **zero-indexed**. An array of size `n` has valid indices from `0` to `n - 1`. Accessing an index outside this range throws an error.
+
+### 4. Watch for data type mismatches
+
+Java is strict about types. Assigning a `double` to an `int` without a cast will fail. Returning the wrong type from a method will fail. Always check what type is expected.
+
+### 5. Distinguish between declaration, initialization, and assignment
+
+- **Declaration**: telling Java the variable exists and what type it is (`int level;`)
+- **Initialization**: giving it a first value (`int level = 7;`)
+- **Assignment**: giving it a new value later (`level = 15;`)
+
+### 6. Pay attention to capitalization and syntax
+
+Java is **case-sensitive**. `String` and `string` are not the same. `Class` and `class` are not the same. Missing semicolons, mismatched braces, and wrong capitalization all cause compiler errors.
+
+### 7. When in doubt, check the method signature
+
+If a question involves a method, look at:
+
+- What does it return? (return type)
+- What does it take? (parameters)
+- Is it `void` or does it return something?
+
+### 8. Don't overthink "trick" options
+
+If an option looks almost right but has something clearly wrong (missing keyword, wrong capitalization, wrong syntax), it's probably the distractor.
+
+---
+
+## 1. Java Fundamentals
+
+### Primitive Data Types
+
+Java has **eight primitive data types**. These are the basic building blocks for storing simple values:
+
+| Type      | Stores             | Example                |
+| --------- | ------------------ | ---------------------- |
+| `byte`    | Very small integer | `byte b = 10;`         |
+| `short`   | Small integer      | `short s = 500;`       |
+| `int`     | Standard integer   | `int i = 1000;`        |
+| `long`    | Large integer      | `long l = 5000L;`      |
+| `float`   | Small decimal      | `float f = 5.7f;`      |
+| `double`  | Standard decimal   | `double d = 9.7;`      |
+| `char`    | Single character   | `char c = 'A';`        |
+| `boolean` | `true` or `false`  | `boolean flag = true;` |
+
+### What is NOT a Primitive?
+
+`String` is **not** a primitive type. It is a **class** (an object type). This is a common source of confusion.
+
+```java
+String greeting = "Hello, Java!";  // String is a class, not a primitive
+```
+
+### Variable Declaration and Initialization
+
+The general pattern is:
+
+```
+<type> <name> = <value>;
+```
+
+Examples:
+
+```java
+int age = 25;
+double temperature = 72.5;
+boolean isActive = true;
+char initial = 'R';
+String name = "Alice";
+```
+
+You can also declare first, then assign later:
+
+```java
+int age;          // declaration
+age = 25;         // assignment
+```
+
+### ⚠️ Watch Out For
+
+- Declaring a variable without initializing it and trying to use it immediately in certain contexts will cause an error.
+- Using the wrong type for the value: `int temperature = 72.5;` fails because `72.5` is a decimal.
+- Capitalization matters: `Integer` (a class) is different from `int` (a primitive).
+- Missing semicolons at the end of statements.
+
+---
+
+## 2. Type Casting
+
+Java is strict about types, but sometimes you need to convert a value from one type to another.
+
+### Implicit Casting (Widening)
+
+Java automatically converts smaller types to larger types when there's no risk of losing information:
+
+```java
+int i = 10;
+double d = i;     // int automatically becomes double: 10.0
+```
+
+This works because a `double` can hold any `int` value without loss.
+
+### Explicit Casting (Narrowing)
+
+Converting from a larger type to a smaller type can lose information, so Java requires you to **explicitly** cast:
+
+```java
+double d = 14.8;
+int i = (int) d;    // Explicit cast: i becomes 14 (decimal truncated)
+```
+
+### What Happens Without a Cast?
+
+```java
+double d = 14.8;
+int i = d;          // ❌ Compiler error! Cannot assign double to int without cast
+```
+
+### ⚠️ Watch Out For
+
+- Assigning a `double` to an `int` directly (without cast) → **compiler error**.
+- Casting a `double` to an `int` **truncates** the decimal part, it does not round. `(int) 14.8` is `14`, not `15`.
+- Casting can lose precision — be intentional about it.
+
+---
+
+## 3. Operators and Precedence
+
+### Arithmetic Operators
+
+| Operator | Meaning             | Example                            |
+| -------- | ------------------- | ---------------------------------- |
+| `+`      | Addition            | `5 + 3` → `8`                      |
+| `-`      | Subtraction         | `5 - 3` → `2`                      |
+| `*`      | Multiplication      | `5 * 3` → `15`                     |
+| `/`      | Division            | `10 / 3` → `3` (integer division!) |
+| `%`      | Modulus (remainder) | `10 % 3` → `1`                     |
+
+### Integer Division Warning
+
+When both operands are integers, division gives an integer result (decimal is dropped):
+
+```java
+int result = 7 / 2;       // result is 3, not 3.5
+double result2 = 7.0 / 2; // result2 is 3.5 (at least one operand is double)
+```
+
+### Operator Precedence (Order of Operations)
+
+From highest to lowest precedence (for what you need here):
+
+1. Parentheses `( )`
+2. Unary operators `++`, `--`, `!`
+3. Multiplication, Division, Modulus `*`, `/`, `%`
+4. Addition, Subtraction `+`, `-`
+5. Comparison `<`, `<=`, `>`, `>=`
+6. Equality `==`, `!=`
+7. Logical AND `&&`
+8. Logical OR `||`
+9. Assignment `=`, `+=`, `-=`, `*=`, `/=`
+
+**Example:**
+
+```java
+int x = 5 + 2 * 3;      // x is 11 (multiplication first)
+int y = (5 + 2) * 3;    // y is 21 (parentheses force addition first)
+```
+
+### Comparison Operators
+
+| Operator | Meaning                  |
+| -------- | ------------------------ |
+| `==`     | Equal to                 |
+| `!=`     | Not equal to             |
+| `<`      | Less than                |
+| `<=`     | Less than or equal to    |
+| `>`      | Greater than             |
+| `>=`     | Greater than or equal to |
+
+Note: `=>` is **not** a valid Java operator.
+
+### Assignment vs. Equality
+
+- `=` is **assignment**: `x = 5` stores 5 in x.
+- `==` is **equality check**: `x == 5` asks "is x equal to 5?" and returns `true` or `false`.
+
+Mixing them up is a very common bug.
+
+### ⚠️ Watch Out For
+
+- Integer division: `5 / 2` is `2`, not `2.5`.
+- Precedence mistakes: without parentheses, `*` and `/` always happen before `+` and `-`.
+- Using `=` when you meant `==` (or vice versa).
+
+---
+
+## 4. Strings
+
+Strings are objects, not primitives, but they're used so often that they behave in many ways like built-in types.
+
+### String Declaration
+
+```java
+String name = "Alice";
+String empty = "";
+```
+
+### Common String Methods
+
+| Method                     | What it does                               | Example                                  |
+| -------------------------- | ------------------------------------------ | ---------------------------------------- |
+| `.length()`                | Returns number of characters               | `"Hello".length()` → `5`                 |
+| `.charAt(i)`               | Returns character at index `i`             | `"Hello".charAt(0)` → `'H'`              |
+| `.substring(start, end)`   | Returns part of the string (end exclusive) | `"Hello".substring(1, 4)` → `"ell"`      |
+| `.equals(other)`           | Checks if values are equal                 | `"abc".equals("abc")` → `true`           |
+| `.equalsIgnoreCase(other)` | Equals ignoring case                       | `"ABC".equalsIgnoreCase("abc")` → `true` |
+| `.toUpperCase()`           | Converts to uppercase                      | `"hi".toUpperCase()` → `"HI"`            |
+| `.toLowerCase()`           | Converts to lowercase                      | `"HI".toLowerCase()` → `"hi"`            |
+
+### String Length — Note the Difference!
+
+```java
+String s = "Hello";
+int len = s.length();      // Method call with parentheses — Strings use .length()
+
+int[] arr = {1, 2, 3};
+int arrLen = arr.length;   // Field access with NO parentheses — arrays use .length
+```
+
+This is a classic source of confusion:
+
+- **Strings use `.length()`** (method, with parentheses)
+- **Arrays use `.length`** (field, no parentheses)
+
+### String Concatenation
+
+Use `+` to join strings:
+
+```java
+String first = "Hello";
+String second = "World";
+String combined = first + " " + second;  // "Hello World"
+```
+
+### ⚠️ Watch Out For
+
+- `.length()` on String (parentheses) vs `.length` on array (no parentheses).
+- `substring(start, end)` — the `end` index is **exclusive**.
+- Using `==` to compare string values (this compares references, not content — use `.equals()` instead).
+
+---
+
+## 5. Arrays
+
+An **array** stores multiple values of the same type in a fixed-size sequence.
+
+### Array Declaration and Initialization
+
+**With initial values:**
+
+```java
+int[] temperatures = {68, 72, 75, 80, 77};
+String[] colors = {"red", "blue", "green"};
+```
+
+**With a specified size (all elements default to 0, null, or false):**
+
+```java
+int[] data = new int[4];           // 4 zeros: {0, 0, 0, 0}
+String[] labels = new String[3];   // 3 nulls
+```
+
+### Array Indexing
+
+Arrays are **zero-indexed**:
+
+- First element: index `0`
+- Last element: index `length - 1`
+
+```java
+int[] items = {100, 200, 300, 400, 500};
+// indices:   0    1    2    3    4
+int first = items[0];    // 100
+int third = items[2];    // 300
+int last = items[4];     // 500
+```
+
+### Array Length
+
+Use `.length` (no parentheses — it's a field, not a method):
+
+```java
+int[] items = {100, 200, 300};
+int size = items.length;          // 3
+int lastIndex = items.length - 1; // 2
+```
+
+### ⚠️ Watch Out For
+
+- Indices start at **0**, not 1.
+- An array of size `n` has indices from `0` to `n - 1`. Accessing index `n` throws an `ArrayIndexOutOfBoundsException`.
+- `.length` for arrays has **no parentheses**.
+- `int[] arr = new int[4];` creates an array with **4 elements** (indices 0–3), all initialized to `0`.
+
+---
+
+## 6. Loops
+
+Loops repeat a block of code. Java has four main loop types.
+
+### Standard `for` Loop
+
+Best when you know how many times to repeat:
+
+```java
+for (int i = 0; i < 5; i++) {
+    System.out.println(i);     // Prints 0, 1, 2, 3, 4
+}
+```
+
+Structure: `for (initialization; condition; update)`
+
+- **Initialization**: runs once at the start (`int i = 0`)
+- **Condition**: checked before each iteration (`i < 5`); loop stops when false
+- **Update**: runs after each iteration (`i++`)
+
+### Enhanced `for` Loop (For-each)
+
+Best when you want to process every element of an array or collection, and you don't need the index:
+
+```java
+int[] prices = {25, 40, 15};
+for (int p : prices) {
+    System.out.println(p);     // Prints 25, 40, 15
+}
+```
+
+Reads as: "for each `p` in `prices`."
+
+### `while` Loop
+
+Best when you don't know how many iterations — repeat as long as a condition is true:
+
+```java
+int attempts = 0;
+while (attempts < 3) {
+    System.out.println("Trying...");
+    attempts++;
+}
+// Prints "Trying..." 3 times
+```
+
+The condition is checked **before** each iteration. If it's false at the start, the loop body never runs.
+
+### `do-while` Loop
+
+Like `while`, but the condition is checked **after** the body, so it always runs **at least once**:
+
+```java
+int attempts = 10;
+do {
+    System.out.println("Trying...");   // Prints once even though attempts >= 3
+    attempts++;
+} while (attempts < 3);
+```
+
+### Summary: When to Use Which
+
+| Loop Type      | Use When                                                                      |
+| -------------- | ----------------------------------------------------------------------------- |
+| `for`          | You know exact number of iterations or need an index                          |
+| Enhanced `for` | You want to visit each element, don't need the index                          |
+| `while`        | You want to loop until a condition changes, and the body might not run at all |
+| `do-while`     | Same as `while`, but you want the body to run at least once                   |
+
+### ⚠️ Watch Out For
+
+- Forgetting to update the loop variable → **infinite loop**.
+- Off-by-one errors: `i < length` vs `i <= length` (the second goes one past the end).
+- `do-while` runs **at least once** even if the condition is false initially.
+- Count how many times a loop actually runs — trace through the condition carefully.
+
+---
+
+## 7. Conditional Statements
+
+### `if` / `else if` / `else`
+
+```java
+int temperature = 68;
+if (temperature >= 80) {
+    System.out.println("Hot");
+} else if (temperature >= 60) {
+    System.out.println("Warm");
+} else {
+    System.out.println("Cold");
+}
+```
+
+Rules:
+
+- You can have one `if`, zero or more `else if`, and at most one `else`.
+- Only **one** branch executes (the first whose condition is true).
+- `else` has no condition — it's the fallback.
+
+### Logical Operators
+
+Combine conditions with:
+
+- `&&` — AND (both must be true)
+- `||` — OR (at least one must be true)
+- `!` — NOT (flips true to false and vice versa)
+
+```java
+int age = 20;
+boolean hasLicense = true;
+if (age >= 18 && hasLicense) {
+    System.out.println("Can drive");
+}
+```
+
+### ⚠️ Watch Out For
+
+- Using `=` instead of `==` in a condition.
+- Forgetting that `else if` only runs if the previous `if` was false.
+
+---
+
+## 8. Methods
+
+A **method** is a reusable block of code that performs a task. It can take inputs (parameters) and return an output.
+
+### Method Structure
+
+```java
+public <returnType> <methodName>(<parameters>) {
+    // method body
+    return <value>;  // if returnType is not void
+}
+```
+
+### Examples
+
+**Method that returns a value:**
+
+```java
+public int multiply(int x, int y) {
+    return x * y;
+}
+```
+
+- **Return type:** `int` — the method gives back an integer
+- **Parameters:** `int x, int y` — two integer inputs
+- **Body:** calculates the product and returns it
+
+**Method that doesn't return anything (`void`):**
+
+```java
+public void displayMessage(String text) {
+    System.out.println("Message: " + text);
+}
+```
+
+- `void` means the method does **not** return a value.
+
+### Calling a Method
+
+```java
+int product = multiply(3, 5);         // product is 15
+displayMessage("Welcome");            // Prints "Message: Welcome"
+```
+
+### Return Types
+
+The **return type** must match what the method returns:
+
+- If the method returns an integer → return type is `int` (or `double`, `long`, etc., if the result fits)
+- If the method returns text → return type is `String`
+- If the method returns nothing → return type is `void`
+
+**Compatible return types:** an `int` value can be returned from a method declared with return type `int`, `long`, `double`, or `float` (widening works automatically). But not every type works for every value — returning `"hello"` from a method declared to return `int` will fail.
+
+### The `return` Keyword
+
+- In a non-`void` method, `return` sends a value back and exits the method.
+- In a `void` method, you can use `return;` alone to exit early (no value), but you **cannot** return a value.
+
+```java
+public void doSomething() {
+    return 42;       // ❌ Compiler error! void methods cannot return a value
+}
+```
+
+### ⚠️ Watch Out For
+
+- Every non-`void` method must return a value on every possible path through the code.
+- `void` methods **cannot** return a value. Writing `return 5;` in a void method is a compiler error.
+- The type of the returned value must be compatible with the declared return type.
+- Method names are case-sensitive: `multiply` and `Multiply` are different methods.
+
+---
+
+## 9. Classes and Objects
+
+A **class** is a blueprint. An **object** is an instance created from that blueprint.
+
+### Declaring a Class
+
+```java
+public class Laptop {
+    // fields (attributes)
+    String brand;
+    int ram;
+
+    // constructor
+    public Laptop(String brand, int ram) {
+        this.brand = brand;
+        this.ram = ram;
     }
-    ```
 
-3.  **Classes**: They are declared using the `class` keyword.
-
-    ```java
-    public class MyClass {
-        // class members here
+    // method
+    public void powerOn() {
+        System.out.println(brand + " is starting up!");
     }
-    ```
+}
+```
 
-4.  **Identifiers**: Identifiers are the names given to various program elements, such as variables, methods, classes, etc.
+Key parts:
 
-    - **Valid Identifiers**:
+- `public class Laptop { ... }` — declares a class named `Laptop`
+- **Fields** (`String brand; int ram;`) — the data each object holds
+- **Constructor** — initializes new objects (see next section)
+- **Methods** — behaviors the object can perform
 
-      ```java
-      int validIdentifier = 10;
-      String _alsoValid = "underscore";
-      double $validToo = 5.6;
-      ```
+### Syntax Rules
 
-    - **Invalid Identifiers**:
-      An identifier cannot start with a number, cannot contain spaces, and cannot be a reserved keyword. Special characters other than underscore (\_) and dollar sign ($) are also not allowed.
-      ```java
-      int 123invalid;  // starts with a number
-      String class;    // 'class' is a reserved keyword in Java
-      double my#var;   // contains a special character #
-      ```
+- The `class` keyword is **lowercase**.
+- The class name should start with an uppercase letter (convention).
+- The class name must match the filename (for public classes): `Laptop` → `Laptop.java`.
+- The body is enclosed in `{ }`.
 
-5.  **Printing to the Console**: Use `System.out.println();`
+### Creating an Object
 
-    ```java
-    String message = "Java is fun!";
-    System.out.println(message);
-    ```
+Use the `new` keyword:
 
-6.  **Operators**: Remember the order of operations.
+```java
+Laptop myLaptop = new Laptop("Dell", 16);
+```
 
-    Operator precedence determines the order in which operators are evaluated in expressions. For instance, multiplication and division have higher precedence than addition and subtraction. Without proper attention to precedence, expressions can yield unexpected results.
+This:
 
-    ```java
-    int result1 = 4 + 4 / 2;  // 6. We do division first: 4 / 2 then + 4.
-    ```
+1. Allocates memory for a new `Laptop` object.
+2. Calls the constructor to initialize it.
+3. Assigns a reference to `myLaptop`.
 
-7.  **Postfix and Prefix**: Difference between `x++` and `++x`. The former will use `x` and then increment, while the latter increments first.
+### ⚠️ Watch Out For
 
-    ```java
-    int x = 5;
-    System.out.println(x++); // 5
-    ```
+- `class` is lowercase; `Class` is not valid as a keyword.
+- You **must** use `new` to create an object: `Laptop myLaptop = Laptop("Dell", 16);` is wrong (missing `new`).
+- The class name in `new Laptop(...)` must match an actual class.
 
-    ```java
-    int x = 5;
-    System.out.println(++x); // 6
-    ```
+---
 
-8.  **Compound Assignment and Expression Evaluation**: Compound assignment operators in Java allow for a shorter notation when applying an operation and subsequently assigning the result to the variable.
+## 10. Constructors
 
-    - **Example**:
+A **constructor** is a special method that runs when a new object is created. Its purpose is typically (but not always) to initialize the object's fields.
 
-      ```java
-      int y = 7;
-      y *= 3 + 4;  // Equivalent to: y = y * (3 + 4);
-      ```
+### Constructor Rules
 
-      Here, the operation on the right (`3 + 4`) is evaluated first, which results in `7`. Then, the multiplication operation (`y * 7`) is executed, which gives `49`, and this value is then assigned to `y`.
+1. The constructor's **name must match the class name exactly**.
+2. Constructors have **no return type** — not even `void`.
+3. A class can have multiple constructors (called "overloading"), each with different parameters.
+4. If you don't write any constructor, Java provides a default empty one.
 
-    - **Outcome**:
-      After executing the code, the value of `y` will be `49`.
+### Example
 
-9.  **String Comparison**:
+```java
+public class Phone {
+    String brand;
+    int storage;
 
-    - `==` checks if two strings are the same object.
-    - `.equals()` checks if two strings have the same value.
-    - `.equalsIgnoreCase()` does the same but is case-insensitive.
-
-    ```java
-    String s1 = "Hello";
-    String s2 = "hello";
-    boolean isEqual1 = s1.equals(s2);  // false
-    boolean isEqual2 = s1.equalsIgnoreCase(s2);  // true
-    ```
-
-10. **Arrays**: One-dimensional arrays look like `int[] arr = {1, 2, 3, 4};`. They use curly braces `{}` for initialization.
-
-    ```java
-    int[] arr = {1, 2, 3, 4};
-    ```
-
-11. **For-each Loop**: This is a concise way to loop through arrays or collections.
-
-    ```java
-    for (Type var : array) {
-        // code here
+    // Constructor
+    public Phone(String brand, int storage) {
+        this.brand = brand;
+        this.storage = storage;
     }
-    ```
+}
+```
 
-    Real example:
+When you call `new Phone("Samsung", 128)`, the constructor runs and assigns the values to the new object's fields.
 
-    ```java
+### Empty Constructors
 
-    String[] fruits = {"apple", "banana", "cherry"};
-    for (String fruit : fruits) {
-    System.out.println(fruit);
-    }
-    ```
+A constructor doesn't have to assign values. It can be empty:
 
-12. **Comparison Operators**: `==`, `!=`, `<`, `<=`, `>`, `>=`. Note: `=>` is NOT valid.
+```java
+public Phone() {
+    // empty, but still a valid constructor
+}
+```
 
-13. **Conditional Statements**: `if-else` statements can have multiple conditions but only one `else` block.
+This is legal and sometimes used when you want to set fields later.
 
-    ```java
-    int score = 85;
-    if (score > 90) {
-        System.out.println("A grade");
-    } else if (score > 75) {
-        System.out.println("B grade");
-    } else {
-        System.out.println("C grade");
-    }
-    ```
+### Constructors with No Parameters vs. With Parameters
 
-14. **Loop Types**:
+```java
+public class Student {
+    String fullName;
 
-    - `for`: Standard loop.
-    - `while`: Executes as long as the condition is true.
-    - `do-while`: Executes at least once and then checks the condition.
-
-    ```java
-    for (int j = 0; j < 3; j++) {
-        System.out.println("For loop: " + j);
+    public Student() {
+        this.fullName = "Unknown";
     }
 
-    int k = 0;
-    while (k < 3) {
-        System.out.println("While loop: " + k);
-        k++;
+    public Student(String fullName) {
+        this.fullName = fullName;
     }
+}
 
-    int m = 0;
-    do {
-        System.out.println("Do-while loop: " + m);
-        m++;
-    } while (m < 3);
-    ```
+// Usage:
+Student s1 = new Student();              // Uses first constructor
+Student s2 = new Student("Maria Lopez"); // Uses second constructor
+```
 
-15. **Break**: Used to exit out of loops early.
+### ⚠️ Watch Out For
 
-    ```java
-    for (int n = 0; n < 5; n++) {
-        if (n == 3) {
-            break;
-        }
-        System.out.println("Number: " + n);
+- Constructor name **must** match the class name — capitalization and spelling.
+- A constructor has **no return type**. Writing `public void Phone(...)` would make it a regular method, not a constructor.
+- Calling `new Phone()` only works if a matching constructor exists.
+
+---
+
+## 11. The `this` Keyword
+
+`this` is a reference to the **current object** — the object whose method or constructor is currently running.
+
+### Common Use: Distinguishing Fields from Parameters
+
+When a parameter has the same name as a field, `this.` makes it clear which one you mean:
+
+```java
+public class Movie {
+    String director;
+    int runtime;
+
+    public Movie(String director, int runtime) {
+        this.director = director;   // this.director is the field; director is the parameter
+        this.runtime = runtime;
     }
-    ```
+}
+```
 
-16. **String Operations**:
+Without `this.`, Java would think both sides refer to the parameter, and the field would never be set.
 
-    - Concatenation: `"Hello" + " World" = "Hello World"`.
-    - Substring: `s.substring(start, end)`. End index is exclusive.
-    - Case-insensitive Comparison: Use `.equalsIgnoreCase()`.
+### ⚠️ Watch Out For
 
-    ```java
-    String greet = "Hello";
-    String who = "World";
-    System.out.println(greet + " " + who);  // "Hello World"
+- `this` only makes sense inside a class (in constructors and instance methods).
+- `this.field = field;` is a common pattern — the left side is the object's field, the right side is the parameter.
 
-    String txt = "Hello, World!";
-    System.out.println(txt.substring(7, 12));  // "World"
+---
 
-    String s3 = "HELLO";
-    String s4 = "hello";
-    boolean isSameCaseInsensitive = s3.equalsIgnoreCase(s4);  // true
-    ```
+## 12. Accessing Object Members
 
-17. **Java Virtual Machine (JVM)**
+Once you have an object, you can access its fields and methods using the **dot operator** (`.`).
 
-    The Java Virtual Machine (JVM) is a virtual machine that enables a computer to run Java programs as well as programs written in other languages that are also compiled to Java bytecode. The JVM is responsible for loading code, verifying code, executing code, and providing the runtime environment.
+### Accessing Fields
 
-18. **Constructors**
+```java
+Movie m = new Movie("Nolan", 148);
+System.out.println(m.director);    // "Nolan" (if director is accessible)
+System.out.println(m.runtime);     // 148
+```
 
-    Constructors in Java are special methods used to initialize objects. The constructor is called when an object of a class is created. It can be used to set initial values for object attributes:
+This only works if the fields are accessible from outside the class. If fields are declared `private` (recommended for real-world code), you access them through **getter methods** instead:
 
-    ```java
-    public class MyClass {
-        int x;
+```java
+System.out.println(m.getDirector());    // Preferred in well-designed classes
+System.out.println(m.getRuntime());
+```
 
-        // Constructor
-        public MyClass(int y) {
-            x = y;
-        }
+For the purposes of this assessment, assume fields are accessible unless stated otherwise.
+
+### Calling Methods
+
+```java
+Laptop myLaptop = new Laptop("Dell", 16);
+myLaptop.powerOn();    // Calls the powerOn() method on myLaptop
+```
+
+### ⚠️ Watch Out For
+
+- Use the dot `.` to access fields and methods on an object.
+- If a field is `private`, you cannot access it directly from outside the class.
+- Method calls require parentheses, even if there are no arguments: `myLaptop.powerOn()`, not `myLaptop.powerOn`.
+
+---
+
+## 13. Common Array Patterns
+
+These are fundamental patterns you should recognize and be able to apply.
+
+### Pattern 1: Sum All Elements
+
+```java
+int[] marks = {15, 20, 25, 10};
+int sum = 0;
+for (int m : marks) {
+    sum += m;
+}
+// sum is 70
+```
+
+Key idea: initialize the accumulator to `0`, then add each element.
+
+### Pattern 2: Find the Maximum (Largest) Value
+
+**The right way:**
+
+```java
+int[] readings = {12, 45, 8, 33};
+int largest = readings[0];         // Start with the first element
+for (int r : readings) {
+    if (r > largest) {
+        largest = r;
     }
-    ```
+}
+```
 
-19. **Creating an Empty Array**
+**Why `largest = readings[0]` instead of `largest = 0`?**
+Starting `largest` at `0` only works if there's at least one value `≥ 0` in the array. If all values are negative (like `{-12, -45, -8, -33}`), `largest` would incorrectly stay at `0` because no element is greater than `0`.
 
-    To create an empty array in Java, you define the array with a specified size (number of elements it can hold), but without initializing the elements:
+Starting with the first element of the array guarantees correctness no matter what values the array contains.
 
-    ```java
-    int[] myArray = new int[10]; // An empty array of integers with a capacity of 10 elements
-    ```
+### Pattern 3: Find the Minimum Value
 
-20. **The "this" Keyword**
+Mirror image of finding max:
 
-    In Java, `this` is a reference variable that refers to the current object. It is used to access class variables and methods. It is also used in constructors and setters to distinguish between instance variables and parameters with the same names.
-
-21. **The "-=" Operator**
-
-    The `-=` operator is used to subtract a right-hand operand from a left-hand operand and then assign the result to the left operand. For example:
-
-    ```java
-    int i = 10;
-    i -= 2;  // i is now 8
-    ```
-
-22. **Switch Statement**
-
-    A switch statement allows a variable to be tested for equality against a list of values. Each value is called a case, and the variable being switched on is checked for each switch case.
-
-    ```java
-    switch(expression) {
-        case x:
-            // code block
-            break;
-        case y:
-            // code block
-            break;
-        default:
-            // code block
+```java
+int[] readings = {12, 45, 8, 33};
+int smallest = readings[0];
+for (int r : readings) {
+    if (r < smallest) {
+        smallest = r;
     }
-    ```
+}
+```
 
-23. **The "continue" Keyword in Loops**
+### Pattern 4: Count Elements Matching a Condition
 
-    The `continue` keyword skips the current iteration of a loop and proceeds to the next iteration. This is useful if you want to skip specific conditions within your loop.
-
-    ```java
-    for (int i = 0; i < 5; i++) {
-        if (i == 2) continue;
-        System.out.print(i + " "); // Outputs: 0 1 3 4
+```java
+int[] ages = {22, 17, 30, 15, 40};
+int adults = 0;
+for (int a : ages) {
+    if (a >= 18) {
+        adults++;
     }
-    ```
+}
+// adults is 3 (the values 22, 30, and 40)
+```
 
-24. **Iterating Over Arrays with Loops**
+### Pattern 5: Iterate with Index (when you need the position)
 
-    All types of loops—`for`, `while`, and `do-while`—can be used to iterate over elements of an array in Java. This allows you to perform operations on array elements regardless of the loop type used.
+```java
+int[] prices = {25, 40, 15};
+for (int i = 0; i < prices.length; i++) {
+    System.out.println("Index " + i + ": " + prices[i]);
+}
+```
 
-    ```java
-    int[] array = {1, 2, 3, 4, 5};
-    for (int num : array) {
-        System.out.println(num);
-    }
-    ```
+Use the standard `for` loop when you need the index. Use enhanced `for` when you only care about the values.
 
-25. **Difference Between "=" and "=="**
+### ⚠️ Watch Out For
 
-    - `=` is the assignment operator, used to assign the value on its right to the variable on its left.
-    - `==` is the equality operator, used to test if two variables are equal in value.
+- **Initialization matters.** Starting `max` at `0` fails for all-negative arrays. Starting at the first element is safe.
+- **Starting `sum` at `0`** is correct because `0` is the identity for addition — adding 0 doesn't change anything.
+- **Off-by-one errors** in standard `for` loops: `i < arr.length` is correct; `i <= arr.length` goes one past the end.
 
-26. **`==` and `new String`**
+---
 
-    When comparing strings in Java, `==` checks for reference equality (whether they refer to the same object), while `.equals()` checks for value equality (whether the contents are the same). Using `new String` creates a new object in memory, so `==` will return `false` when comparing strings created with `new String`, even if they contain the same characters.
+## Quick Reference Summary
+
+### Primitive Types
+
+`byte`, `short`, `int`, `long`, `float`, `double`, `char`, `boolean` — **`String` is NOT a primitive.**
+
+### Declaration Pattern
+
+`<type> <name> = <value>;`
+
+### Array Indexing
+
+- First: `0`
+- Last: `length - 1`
+- Size-`n` array has indices `0` to `n-1`
+
+### Length
+
+- Strings: `.length()` (method, parentheses)
+- Arrays: `.length` (field, no parentheses)
+
+### Loops
+
+- `for` — count-controlled
+- Enhanced `for` — iterate over each element
+- `while` — may run 0 times
+- `do-while` — runs at least once
+
+### Methods
+
+- Non-`void` → must return a value
+- `void` → cannot return a value (but `return;` alone is legal to exit early)
+
+### Classes
+
+- Declared with `public class <Name> { ... }`
+- Create objects with `new ClassName(...)`
+- Access members with `.`
+
+### Constructors
+
+- Name matches class name exactly
+- No return type
+- Can be empty or initialize fields
+- Use `this.field = field;` to avoid name collisions
+
+### Casting
+
+- Implicit (widening): automatic, e.g., `int` → `double`
+- Explicit (narrowing): required, e.g., `(int) someDouble`
+
+---
+
+## Final Study Tips
+
+1. **Practice tracing code by hand.** Don't just read; simulate execution on paper.
+2. **Memorize the primitive types.** Especially remember that `String` is not one.
+3. **Know the difference between array `.length` and String `.length()`.**
+4. **Understand that arrays are zero-indexed.** Last index is always `length - 1`.
+5. **Constructors: name matches class, no return type.**
+6. **`this.x = x;` is how you assign a parameter to a field with the same name.**
+7. **For loops: always count the iterations carefully.** Off-by-one errors are common.
+8. **`void` methods don't return values. Non-`void` methods must.**
+9. **When casting from `double` to `int`, decimals are truncated, not rounded.**
+10. **`==` is equality, `=` is assignment.** Don't mix them up.
+
+Good luck! Remember — this guide is a reference, not a substitute for understanding. The assessment tests whether you can **apply** these concepts, so read each question carefully, trace through the code, and think about what's actually happening.
