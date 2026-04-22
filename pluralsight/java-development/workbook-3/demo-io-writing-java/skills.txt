@@ -1,0 +1,3 @@
+Hello Everyone
+I am your Potato instructor!
+Welcome to the Java Bootcamp!
