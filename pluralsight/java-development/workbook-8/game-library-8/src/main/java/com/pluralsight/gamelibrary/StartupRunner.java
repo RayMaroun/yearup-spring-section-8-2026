@@ -1,0 +1,191 @@
+package com.pluralsight.gamelibrary;
+
+import com.pluralsight.gamelibrary.data.GameRepository;
+import com.pluralsight.gamelibrary.data.GenreRepository;
+import com.pluralsight.gamelibrary.models.Game;
+import com.pluralsight.gamelibrary.models.Genre;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.util.Scanner;
+
+@Component
+public class StartupRunner implements CommandLineRunner {
+
+    private final GameRepository gameRepository;
+    private final GenreRepository genreRepository;
+
+    @Autowired
+    public StartupRunner(GameRepository gameRepository, GenreRepository genreRepository) {
+        this.gameRepository = gameRepository;
+        this.genreRepository = genreRepository;
+    }
+
+    @Override
+    public void run(String... args) {
+        seedData();
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+        while (running) {
+            System.out.println("\n=== Game Library ===");
+            System.out.println("1) List all games");
+            System.out.println("2) Find by release year");
+            System.out.println("3) Search by title");
+            System.out.println("4) Find by minimum rating");
+            System.out.println("5) Advanced search (rating + year)");
+            System.out.println("6) View one game by id");
+            System.out.println("7) Add a game");
+            System.out.println("8) Update a game's rating");
+            System.out.println("9) Delete a game");
+            System.out.println("10) List games by genre");
+            System.out.println("0) Quit");
+            System.out.print("Choose: ");
+
+            switch (scanner.nextInt()) {
+                case 1 -> listGames();
+                case 2 -> findByYear(scanner);
+                case 3 -> findByTitle(scanner);
+                case 4 -> findByRating(scanner);
+                case 5 -> advancedSearch(scanner);
+                case 6 -> viewById(scanner);
+                case 7 -> addGame(scanner);
+                case 8 -> updateRating(scanner);
+                case 9 -> deleteGame(scanner);
+                case 10 -> listByGenre(scanner);
+                case 0 -> running = false;
+                default -> System.out.println("Unknown option.");
+            }
+        }
+    }
+
+    private void listGames() {
+        System.out.println("You have " + gameRepository.count() + " games:");
+        for (Game g : gameRepository.findAll()) {
+            System.out.println(g.getId() + " - " + g.getTitle() + " [" + g.getGenre().getName() + "]");
+        }
+    }
+
+    private void findByYear(Scanner scanner) {
+        System.out.print("Year: ");
+        int year = scanner.nextInt();
+        for (Game g : gameRepository.findByReleaseYear(year)) {
+            System.out.println(g.getTitle() + " (" + g.getReleaseYear() + ")");
+        }
+    }
+
+    private void findByTitle(Scanner scanner) {
+        scanner.nextLine();
+        System.out.print("Title contains: ");
+        String text = scanner.nextLine();
+        for (Game g : gameRepository.findByTitleContaining(text)) {
+            System.out.println(g.getTitle());
+        }
+    }
+
+    private void findByRating(Scanner scanner) {
+        System.out.print("Minimum rating: ");
+        double min = scanner.nextDouble();
+        for (Game g : gameRepository.findByRatingGreaterThan(min)) {
+            System.out.println(g.getTitle() + " (" + g.getRating() + ")");
+        }
+    }
+
+    private void advancedSearch(Scanner scanner) {
+        System.out.print("Minimum rating: ");
+        double minRating = scanner.nextDouble();
+        System.out.print("Released on or after year: ");
+        int minYear = scanner.nextInt();
+        for (Game g : gameRepository.search(minRating, minYear)) {
+            System.out.println(g.getTitle() + " (" + g.getRating() + ", " + g.getReleaseYear() + ")");
+        }
+    }
+
+    private void viewById(Scanner scanner) {
+        System.out.print("Game id: ");
+        long id = scanner.nextLong();
+        Game game = gameRepository.findById(id).orElse(null);
+        if (game == null) {
+            System.out.println("No game with that id.");
+        } else {
+            System.out.println(game.getId() + " - " + game.getTitle() + " (" + game.getRating() + ")");
+        }
+    }
+
+    private void listGenres() {
+        for (Genre genre : genreRepository.findAll()) {
+            System.out.println(genre.getId() + " - " + genre.getName());
+        }
+    }
+
+    private void addGame(Scanner scanner) {
+        scanner.nextLine();
+        System.out.print("Title: ");
+        String title = scanner.nextLine();
+        System.out.print("Release year: ");
+        int year = scanner.nextInt();
+        System.out.print("Rating: ");
+        double rating = scanner.nextDouble();
+        System.out.println("Choose a genre:");
+        listGenres();
+        System.out.print("Genre id: ");
+        long genreId = scanner.nextLong();
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(() -> new RuntimeException("No genre with id " + genreId));
+        gameRepository.save(new Game(title, year, rating, genre));
+        System.out.println("Added!");
+    }
+
+    private void updateRating(Scanner scanner) {
+        System.out.print("Game id: ");
+        long id = scanner.nextLong();
+        Game game = gameRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No game with id " + id));
+        System.out.print("New rating: ");
+        game.setRating(scanner.nextDouble());
+        gameRepository.save(game);
+        System.out.println("Updated!");
+    }
+
+    private void deleteGame(Scanner scanner) {
+        System.out.print("Game id: ");
+        long id = scanner.nextLong();
+        if (gameRepository.existsById(id)) {
+            gameRepository.deleteById(id);
+            System.out.println("Deleted.");
+        } else {
+            System.out.println("No game with that id.");
+        }
+    }
+
+    private void listByGenre(Scanner scanner) {
+        scanner.nextLine();
+        System.out.print("Genre name: ");
+        String name = scanner.nextLine();
+        for (Game g : gameRepository.findByGenre_Name(name)) {
+            System.out.println(g.getTitle());
+        }
+    }
+
+    // After the Module 4 reset the database is empty, so we seed genres and
+    // games that are already linked - every game is created with its genre.
+    private void seedData() {
+        if (gameRepository.count() > 0) {
+            return;
+        }
+        Genre action = genreRepository.save(new Genre("Action"));
+        Genre rpg = genreRepository.save(new Genre("RPG"));
+        Genre indie = genreRepository.save(new Genre("Indie"));
+        Genre shooter = genreRepository.save(new Genre("Shooter"));
+        Genre adventure = genreRepository.save(new Genre("Adventure"));
+
+        gameRepository.save(new Game("Hollow Knight", 2017, 9.4, indie));
+        gameRepository.save(new Game("Elden Ring", 2022, 9.6, rpg));
+        gameRepository.save(new Game("Celeste", 2018, 9.1, indie));
+        gameRepository.save(new Game("DOOM Eternal", 2020, 8.9, shooter));
+        gameRepository.save(new Game("Stardew Valley", 2016, 9.2, indie));
+        gameRepository.save(new Game("Hades", 2020, 9.5, action));
+        gameRepository.save(new Game("The Witcher 3", 2015, 9.8, rpg));
+        gameRepository.save(new Game("Cuphead", 2017, 8.8, adventure));
+    }
+}
